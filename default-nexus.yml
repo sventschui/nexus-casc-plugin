@@ -1,0 +1,249 @@
+core:
+  baseUrl: ${BASE_URL:""}
+  httpProxy: ${HTTP_PROXY:""}
+  httpsProxy: ${HTTPS_PROXY:""}
+  nonProxyHosts: ${NO_PROXY:""} # TODO: allow to have a list here...
+capabilities:
+  - type: rutauth
+    enabled: true
+    notes: "Nexus CasC"
+    attributes:
+      httpHeader: REMOTE_USER
+  - type: OutreachManagementCapability
+    enabled: false
+security:
+  anonymousAccess: false
+  pruneUsers: true
+  realms:
+    - name: rutauth-realm
+      enabled: true
+  users:
+    - username: johndoe
+      firstName: John
+      lastName: Doe
+      password: ${file:/run/secrets/password_johndoe}
+      updateExistingPassword: false
+      email: johndoe@exmaple.org
+      roles:
+        - source: ""
+          role: nx-admin
+repository:
+  pruneBlobStores: true
+  blobStores:
+    - name: maven
+      type: File
+      attributes:
+        file:
+          path: maven
+        blobStoreQuotaConfig:
+          quotaLimitBytes: 10240000000
+          quotaType: spaceUsedQuota
+    - name: npm
+      type: File
+      attributes:
+        file:
+          path: npm
+        blobStoreQuotaConfig:
+          quotaLimitBytes: 10240000000
+          quotaType: spaceUsedQuota
+    - name: docker
+      type: File
+      attributes:
+        file:
+          path: docker
+        blobStoreQuotaConfig:
+          quotaLimitBytes: 10240000000
+          quotaType: spaceUsedQuota
+  pruneCleanupPolicies: true
+  cleanupPolicies:
+    - name: cleanup-maven-proxy
+      format: maven2
+      notes: ''
+      criteria:
+        lastDownloadBefore: 10
+    - name: cleanup-npm-proxy
+      format: npm
+      notes: ''
+      criteria:
+        lastDownloadBefore: 10
+    - name: cleanup-docker-proxy
+      format: docker
+      notes: ''
+      criteria:
+        lastDownloaded: 864000
+  pruneRepositories: false # true
+  repositories:
+    - name: npm-proxy
+      online: true
+      recipeName: npm-proxy
+      attributes:
+        proxy:
+          remoteUrl: https://registry.npmjs.org
+          contentMaxAge: -1.0
+          metadataMaxAge: 1440.0
+        httpclient:
+          blocked: false
+          autoBlock: true
+          connection:
+            useTrustStore: false
+        storage:
+          blobStoreName: npm
+          strictContentTypeValidation: true
+        routingRules:
+          routingRuleId: null
+        negativeCache:
+          enabled: true
+          timeToLive: 1440.0
+        cleanup:
+          policyName: cleanup-npm-proxy
+    - name: maven-snapshots
+      online: true
+      recipeName: maven2-hosted
+      attributes:
+        maven:
+          versionPolicy: SNAPSHOT
+          layoutPolicy: STRICT
+        storage:
+          writePolicy: ALLOW
+          strictContentTypeValidation: false
+          blobStoreName: maven
+    - name: maven-central
+      online: true
+      recipeName: maven2-proxy
+      attributes:
+        proxy:
+          contentMaxAge: -1
+          remoteUrl: https://repo1.maven.org/maven2/
+          metadataMaxAge: 1440
+        negativeCache:
+          timeToLive: 1440
+          enabled: true
+        storage:
+          strictContentTypeValidation: false
+          blobStoreName: maven
+        httpClient:
+          connection:
+            blocked: false
+            autoBlock: true
+        maven:
+          versionPolicy: RELEASE
+          layoutPolicy: PERMISSIVE
+        cleanupPolicy:
+          name: cleanup-maven-proxy
+        httpclient:
+        maven-indexer:
+    - name: maven-tudelft
+      online: true
+      recipeName: maven2-proxy
+      attributes:
+        proxy:
+          contentMaxAge: -1
+          remoteUrl: https://simulation.tudelft.nl/maven/
+          metadataMaxAge: 1440
+        negativeCache:
+          timeToLive: 1440
+          enabled: true
+        storage:
+          strictContentTypeValidation: false
+          blobStoreName: maven
+        httpClient:
+          connection:
+            blocked: false
+            autoBlock: true
+        maven:
+          versionPolicy: RELEASE
+          layoutPolicy: PERMISSIVE
+        cleanupPolicy:
+          name: cleanup-maven-proxy
+        httpclient:
+        maven-indexer:
+    - name: maven-public
+      online: true
+      recipeName: maven2-group
+      attributes:
+        maven:
+          versionPolicy: MIXED
+        group:
+          memberNames:
+           - "maven-central"
+           - "maven-snapshots"
+           - "maven-tudelft"
+        storage:
+          blobStoreName: maven
+    - name: docker-hosted
+      online: true
+      recipeName: docker-hosted
+      attributes:
+        docker:
+          forceBasicAuth: true
+          v1Enabled: false
+        storage:
+          blobStoreName: docker
+          strictContentTypeValidation: true
+          writePolicy: ALLOW_ONCE
+        cleanup:
+          policyName: None
+    - name: docker-proxy
+      online: true
+      recipeName: docker-proxy
+      attributes:
+        docker:
+          forceBasicAuth: true
+          v1Enabled: false
+        proxy:
+          remoteUrl: https://registry-1.docker.io
+          contentMaxAge: -1.0
+          metadataMaxAge: 1440.0
+        dockerProxy:
+          indexType: REGISTRY
+        httpclient:
+          blocked: false
+          autoBlock: true
+          connection:
+            useTrustStore: false
+        storage:
+          blobStoreName: docker
+          strictContentTypeValidation: true
+        routingRules:
+          routingRuleId: null
+        negativeCache:
+          enabled: true
+          timeToLive: 1440.0
+        cleanup:
+          policyName: cleanup-docker-proxy
+    - name: docker
+      online: true
+      recipeName: docker-group
+      attributes:
+        docker:
+          forceBasicAuth: true
+          v1Enabled: false
+        storage:
+          blobStoreName: docker
+          strictContentTypeValidation: true
+        group:
+          memberNames:
+            - "docker-hosted"
+            - "docker-proxy"
+    - name: npm-hosted
+      online: true
+      recipeName: npm-hosted
+      attributes:
+        storage:
+          blobStoreName: npm
+          strictContentTypeValidation: true
+          writePolicy: ALLOW_ONCE
+        cleanup:
+          policyName: None
+    - name: npm
+      online: true
+      recipeName: npm-group
+      attributes:
+        storage:
+          blobStoreName: npm
+          strictContentTypeValidation: true
+        group:
+          memberNames:
+           - "npm-proxy"
+           - "npm-hosted"
+

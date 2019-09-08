@@ -37,11 +37,17 @@ Now you can start Nexus as usual.
 
 You can find an example configuration file [here](https://github.com/sventschui/nexus-casc-plugin/blob/master/default-nexus.yml).
 
-Use ${ENV_VAR} for env var interpolation.
+### Interpolation 
+
+Use `${ENV_VAR}` for env var interpolation. Use `${ENV_VAR:default}` or `${ENV_VAR:"default"}` for default values.
+
+Use `${file:/path/to/a/file}` to include the contents of a file.
 
 The configuration file supports following options:
 
-### Core
+### Supported options
+
+#### Core
 
 ```yaml
 core:
@@ -51,7 +57,7 @@ core:
   nonProxyHosts: "" # Comma separated list of hosts not to be queried through a proxy
 ```
 
-### Security
+#### Security
 
 ```yaml
 security:
@@ -64,7 +70,7 @@ security:
     - username: johndoe
       firstName: John
       lastName: Doe
-      password: ${USER_JOHNDOE_PASSWORD}
+      password: ${file:/run/secrets/password_johndoe}
       updateExistingPassword: false # True to update passwords of existing users, otherwise password is only used when creating a user
       email: johndoe@example.org
       roles:
@@ -73,7 +79,7 @@ security:
 ```
 
 
-### Repository
+#### Repository
 
 ```yaml
 repository:

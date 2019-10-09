@@ -33,7 +33,10 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -294,6 +297,9 @@ public class NexusCascPlugin extends StateGuardLifecycleSupport {
 
                     Configuration configuration = existingRepo.getConfiguration();
                     configuration.setAttributes(repoConfig.getAttributes());
+
+                    patchRepoAttributes(repoConfig.getAttributes());
+
                     if (repoConfig.getOnline() != null) {
                         configuration.setOnline(repoConfig.getOnline());
                     }
@@ -309,6 +315,8 @@ public class NexusCascPlugin extends StateGuardLifecycleSupport {
                     configuration.setRecipeName(repoConfig.getRecipeName());
                     configuration.setAttributes(repoConfig.getAttributes());
                     configuration.setOnline(repoConfig.getOnline() != null ? repoConfig.getOnline() : true);
+
+                    patchRepoAttributes(repoConfig.getAttributes());
 
                     try {
                         repositoryManager.create(configuration);
@@ -348,6 +356,25 @@ public class NexusCascPlugin extends StateGuardLifecycleSupport {
                     }
                 }
             });
+        }
+    }
+
+    private void patchRepoAttributes(Map<String, Map<String, Object>> attributes) {
+        Map<String, Object> cleanup = attributes.get("cleanup");
+
+        if (cleanup != null) {
+            Object policyName = cleanup.get("policyName");
+
+            if (policyName != null) {
+                if (policyName instanceof String) {
+                    log.warn("repository.repositories[].attributes.cleanup.policyName should be a list as of Nexus 3.19.0, converting it for you");
+                    HashSet<Object> set = new HashSet<>();
+                    set.add(policyName);
+                    cleanup.put("policyName", set);
+                } else if (policyName instanceof List) {
+                    cleanup.put("policyName", new HashSet<>((Collection<Object>) policyName));
+                }
+            }
         }
     }
 

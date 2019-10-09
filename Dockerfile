@@ -8,7 +8,7 @@ RUN mvn clean compile
 
 ADD src ./src
 
-RUN mvn verify
+RUN mvn verify -T1C
 
 FROM sonatype/nexus3:3.18.1
 

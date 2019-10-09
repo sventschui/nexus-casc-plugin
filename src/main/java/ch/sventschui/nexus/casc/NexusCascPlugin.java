@@ -39,7 +39,8 @@ import java.util.stream.Collectors;
 
 @Named("cascPlugin")
 @Description("Casc Plugin")
-@ManagedLifecycle(phase = ManagedLifecycle.Phase.CAPABILITIES)
+// Plugin must run after CAPABILITIES phase as otherwise we can not load/patch existing capabilities
+@ManagedLifecycle(phase = ManagedLifecycle.Phase.TASKS)
 @Singleton
 public class NexusCascPlugin extends StateGuardLifecycleSupport {
     private final CoreApi coreApi;

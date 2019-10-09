@@ -3,3 +3,5 @@ Dockerfile
 .dockerignore
 *.iml
 .idea/
+.data/
+

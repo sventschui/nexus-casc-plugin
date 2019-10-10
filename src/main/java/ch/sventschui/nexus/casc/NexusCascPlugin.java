@@ -367,7 +367,7 @@ public class NexusCascPlugin extends StateGuardLifecycleSupport {
 
             if (policyName != null) {
                 if (policyName instanceof String) {
-                    log.warn("repository.repositories[].attributes.cleanup.policyName should be a list as of Nexus 3.19.0, converting it for you");
+                    log.warn("repository.repositories[].attributes.cleanup.policyName should be a list as of Nexus 3.19.1, converting it for you");
                     HashSet<Object> set = new HashSet<>();
                     set.add(policyName);
                     cleanup.put("policyName", set);

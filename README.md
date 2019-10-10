@@ -18,7 +18,7 @@ The format of the YAML file is documented below.
 
 ### Manual installation
 
-Download the Nexus CasC plugin [here](https://github.com/sventschui/nexus-casc-plugin/releases/download/3.18.1-01/nexus-casc-plugin-3.18.1-01.jar) and copy it into the `systems` folder of your nexus installation.
+Download the Nexus CasC plugin [here](https://github.com/sventschui/nexus-casc-plugin/releases) and copy it into the `systems` folder of your nexus installation.
 This folder resides in `/opt/sonatype/nexus/system/` when using the `sonatype/nexus3` docker image.
 
 Append the following line to the `etc/karaf/startup.properties` (`/opt/sonatype/nexus/etc/karaf/startup.properties` in the `sonatype/nexus3` docker image) file. 

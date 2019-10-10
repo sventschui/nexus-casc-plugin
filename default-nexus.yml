@@ -21,9 +21,18 @@ security:
     - username: johndoe
       firstName: John
       lastName: Doe
-      password: ${file:/run/secrets/password_johndoe}
+      password: "${file:/run/secrets/password_johndoe}"
       updateExistingPassword: false
       email: johndoe@exmaple.org
+      roles:
+        - source: ""
+          role: nx-admin
+    - username: janedoe
+      firstName: Jane
+      lastName: Doe
+      password: changeme
+      updateExistingPassword: false
+      email: janedoe@exmaple.org
       roles:
         - source: ""
           role: nx-admin

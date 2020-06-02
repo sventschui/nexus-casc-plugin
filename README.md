@@ -1,3 +1,7 @@
+# :warning: Unmaintained
+
+As I am no longer using Nexus I do not maintain this plugin anymore. Have a look at the fork at https://github.com/AdaptiveConsulting/nexus-casc-plugin that is maintained at the time of writing.
+
 # Nexus Configuration as Code
 
 Nexus CasC is a configuration as code plugin for sonatype nexus 3.
